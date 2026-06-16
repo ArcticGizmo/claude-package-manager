@@ -30,11 +30,11 @@ function confirm(question: string): Promise<boolean> {
   });
 }
 
-export async function init(options: { createDotClaude: boolean }): Promise<void> {
+export async function init(options: { force: boolean }): Promise<void> {
   const cwd = process.cwd();
   let dotClaude: string;
 
-  if (options.createDotClaude) {
+  if (options.force) {
     dotClaude = join(cwd, ".claude");
     if (!existsSync(dotClaude)) {
       mkdirSync(dotClaude);
@@ -45,7 +45,7 @@ export async function init(options: { createDotClaude: boolean }): Promise<void>
     if (!found) {
       console.error(
         styleText("red", "No .claude folder found in this directory tree.") +
-          `\nRun with ${styleText("cyan", "--create-dot-claude")} (or ${styleText("cyan", "-c")}) to create one in the current directory.`
+          `\nRun with ${styleText("cyan", "--force")} (or ${styleText("cyan", "-f")}) to create one in the current directory.`
       );
       process.exit(1);
     }
