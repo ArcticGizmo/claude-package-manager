@@ -1,35 +1,8 @@
-import { existsSync, readFileSync } from "fs";
-import { join, dirname } from "path";
-import { homedir } from "os";
+import { readFileSync } from "fs";
+import { findCpmJson } from "../utils/config";
 
 interface HookInput {
   tool_name: string;
-}
-
-interface CpmConfig {
-  allowedMcpServers?: string[];
-}
-
-function findCpmJson(startDir: string): { config: CpmConfig; configPath: string } | null {
-  const home = homedir();
-  let current = startDir;
-  while (current !== home) {
-    const candidate = join(current, ".claude", "cpm.json");
-    if (existsSync(candidate)) {
-      try {
-        return {
-          config: JSON.parse(readFileSync(candidate, "utf8")) as CpmConfig,
-          configPath: candidate,
-        };
-      } catch {
-        return null;
-      }
-    }
-    const parent = dirname(current);
-    if (parent === current) return null;
-    current = parent;
-  }
-  return null;
 }
 
 function block(reason: string): never {
