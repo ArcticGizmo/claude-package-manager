@@ -6,7 +6,7 @@ A CLI tool for managing Claude Code plugins, hooks, and extensions.
 
 ```bash
 # From GitHub (before npm publish)
-npm install -g github:JonHowell/claude-package-manager
+npm install -g github:ArcticGizmo/claude-package-manager
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ cpm --help
 ## Local development
 
 ```bash
-git clone https://github.com/JonHowell/claude-package-manager
+git clone https://github.com/ArcticGizmo/claude-package-manager
 cd claude-package-manager
 pnpm install
 pnpm add -g .   # registers `cpm` globally, pointing at ./dist/index.js

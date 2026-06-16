@@ -1,0 +1,33 @@
+{
+  "name": "claude-package-manager",
+  "version": "0.1.0",
+  "description": "Package manager for Claude Code plugins, hooks, and extensions",
+  "bin": {
+    "cpm": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepare": "pnpm run build"
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.5.0"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT"
+}
