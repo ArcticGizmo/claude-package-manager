@@ -3,13 +3,5 @@
   "owner": { "name": "arcticgizmo" },
   "version": "0.1.0",
   "description": "Claude Package Manager — plugins and hooks for managing Claude Code tools and extensions",
-  "plugins": [
-    {
-      "name": "mcp-gate",
-      "source": "./plugins/mcp-gate",
-      "version": "0.1.0",
-      "description": "PreToolUse hook that blocks MCP server calls not listed in .claude/cpm.json",
-      "keywords": ["mcp", "security", "gate", "permission", "allowlist"]
-    }
-  ]
+  "plugins": []
 }

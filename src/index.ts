@@ -29,19 +29,4 @@ program
   .description("PreToolUse hook — blocks MCP servers not listed in .claude/cpm.json allowedMcpServers")
   .action(mcpGate);
 
-program
-  .command("list")
-  .description("List available plugins in the cpm marketplace")
-  .action(listPlugins);
-
-program
-  .command("install <plugin>")
-  .description("Install a plugin and register its hooks in ~/.claude/settings.json")
-  .action(installPlugin);
-
-program
-  .command("uninstall <plugin>")
-  .description("Uninstall a plugin and remove its hooks from ~/.claude/settings.json")
-  .action(uninstallPlugin);
-
 program.parse();

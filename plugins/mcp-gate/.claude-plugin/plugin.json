@@ -1,6 +1,0 @@
-{
-  "name": "mcp-gate",
-  "version": "0.1.0",
-  "description": "PreToolUse hook that blocks MCP server calls not in the cpm.json allowlist",
-  "keywords": ["mcp", "security", "gate", "permission"]
-}
