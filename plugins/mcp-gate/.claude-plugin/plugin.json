@@ -1,0 +1,9 @@
+{
+  "name": "mcp-gate",
+  "version": "0.1.0",
+  "description": "Blocks MCP server tool calls not in the project allowlist",
+  "keywords": ["mcp", "security", "gate", "permission", "allowlist"],
+  "handlers": {
+    "PreToolUse": "./handlers/pre-tool-use.cjs"
+  }
+}

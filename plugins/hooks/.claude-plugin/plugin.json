@@ -1,0 +1,6 @@
+{
+  "name": "hooks",
+  "version": "0.1.0",
+  "description": "Intercepts all Claude Code hook events and dispatches them to cpm handle",
+  "keywords": ["hooks", "interceptor", "lifecycle"]
+}

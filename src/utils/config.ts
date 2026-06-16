@@ -4,6 +4,7 @@ import { homedir } from "os";
 
 export interface CpmConfig {
   allowedMcpServers?: string[];
+  plugins?: Record<string, Record<string, unknown>>;
 }
 
 export interface CpmConfigResult {
@@ -18,8 +19,9 @@ export function findCpmJson(startDir: string): CpmConfigResult | null {
     const candidate = join(current, ".claude", "cpm.json");
     if (existsSync(candidate)) {
       try {
+        const raw = readFileSync(candidate, "utf8").replace(/^﻿/, "");
         return {
-          config: JSON.parse(readFileSync(candidate, "utf8")) as CpmConfig,
+          config: JSON.parse(raw) as CpmConfig,
           configPath: candidate,
         };
       } catch {

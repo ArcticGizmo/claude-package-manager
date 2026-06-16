@@ -3,5 +3,20 @@
   "owner": { "name": "arcticgizmo" },
   "version": "0.1.0",
   "description": "Claude Package Manager — plugins and hooks for managing Claude Code tools and extensions",
-  "plugins": []
+  "plugins": [
+    {
+      "name": "hooks",
+      "source": "./plugins/hooks",
+      "version": "0.1.0",
+      "description": "Intercepts all Claude Code hook events and dispatches them to cpm handle",
+      "keywords": ["hooks", "interceptor", "lifecycle"]
+    },
+    {
+      "name": "mcp-gate",
+      "source": "./plugins/mcp-gate",
+      "version": "0.1.0",
+      "description": "Blocks MCP server tool calls not in the project allowlist",
+      "keywords": ["mcp", "security", "gate", "permission", "allowlist"]
+    }
+  ]
 }
