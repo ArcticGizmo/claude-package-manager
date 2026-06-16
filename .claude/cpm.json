@@ -1,5 +1,6 @@
 {
-  "allowedMcpServers": [
-    "claude_ai_Microsoft_Learn"
-  ]
+  "allowedMcpServers": ["claude_ai_Microsoft_Learn"],
+  "plugins": {
+    "mcp-gate": {}
+  }
 }
