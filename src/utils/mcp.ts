@@ -1,47 +1,73 @@
 import { existsSync, readFileSync } from "fs";
 import { join, dirname } from "path";
 import { homedir } from "os";
+import { spawnSync } from "child_process";
 import { claudeDir } from "./paths";
+
+export type McpServerStatus = "connected" | "needs-auth" | "unknown";
 
 export interface McpServer {
   name: string;
   displayName: string;
+  status: McpServerStatus;
 }
 
-// These claude.ai servers are always available and don't appear in any local config file.
-const ALWAYS_ON_SERVERS: McpServer[] = [
-  { name: "claude_ai_Atlassian", displayName: "claude.ai Atlassian" },
-  { name: "claude_ai_Figma", displayName: "claude.ai Figma" },
-  { name: "claude_ai_Mermaid_Chart", displayName: "claude.ai Mermaid Chart" },
-  { name: "claude_ai_Microsoft_Learn", displayName: "claude.ai Microsoft Learn" },
-];
+function parseStatus(raw: string): McpServerStatus {
+  if (raw.includes("Connected")) return "connected";
+  if (raw.includes("Needs authentication")) return "needs-auth";
+  return "unknown";
+}
+
+function fromClaudeMcpList(): McpServer[] {
+  const result = spawnSync("claude", ["mcp", "list"], {
+    encoding: "utf8",
+    timeout: 15_000,
+  });
+
+  if (result.status !== 0 || !result.stdout) return [];
+
+  const servers: McpServer[] = [];
+
+  for (const line of result.stdout.split("\n")) {
+    // Format: "claude.ai Figma: https://mcp.figma.com/mcp - ✔ Connected"
+    const match = line.match(/^(.+?):\s+https?:\/\/\S+\s+-\s+(.+)$/);
+    if (!match) continue;
+
+    const displayName = match[1].trim();
+    const status = parseStatus(match[2].trim());
+    const name = displayName.replace(/\./g, "_").replace(/\s+/g, "_");
+    servers.push({ name, displayName, status });
+  }
+
+  return servers;
+}
 
 export function discoverMcpServers(): McpServer[] {
-  const servers: McpServer[] = [];
   const seen = new Set<string>();
+  const servers: McpServer[] = [];
 
-  function add(name: string, displayName: string) {
-    if (!seen.has(name)) {
-      seen.add(name);
-      servers.push({ name, displayName });
+  function add(server: McpServer) {
+    if (!seen.has(server.name)) {
+      seen.add(server.name);
+      servers.push(server);
     }
   }
 
-  for (const s of ALWAYS_ON_SERVERS) {
-    add(s.name, s.displayName);
+  for (const s of fromClaudeMcpList()) {
+    add(s);
   }
 
-  // ~/.claude/settings.json mcpServers
+  // Locally configured servers from ~/.claude/settings.json and .mcp.json files.
+  // These may not appear in `claude mcp list` (e.g. stdio servers); status is unknown.
   try {
     const settings = JSON.parse(readFileSync(join(claudeDir(), "settings.json"), "utf8")) as {
       mcpServers?: Record<string, unknown>;
     };
     for (const key of Object.keys(settings.mcpServers ?? {})) {
-      add(key, key);
+      add({ name: key, displayName: key, status: "unknown" });
     }
   } catch {}
 
-  // .mcp.json files walking up from CWD (stop before home)
   const home = homedir();
   let current = process.cwd();
   while (current !== home) {
@@ -50,7 +76,7 @@ export function discoverMcpServers(): McpServer[] {
       try {
         const config = JSON.parse(readFileSync(mcpFile, "utf8")) as Record<string, unknown>;
         for (const key of Object.keys(config)) {
-          add(key, key);
+          add({ name: key, displayName: key, status: "unknown" });
         }
       } catch {}
     }
@@ -58,18 +84,6 @@ export function discoverMcpServers(): McpServer[] {
     if (parent === current) break;
     current = parent;
   }
-
-  // mcp-needs-auth-cache.json — recently used claude.ai OAuth servers
-  // Keys are display names like "claude.ai Slack"; internal names replace . and spaces with _
-  try {
-    const cache = JSON.parse(
-      readFileSync(join(claudeDir(), "mcp-needs-auth-cache.json"), "utf8")
-    ) as Record<string, unknown>;
-    for (const displayName of Object.keys(cache)) {
-      const internalName = displayName.replace(/\./g, "_").replace(/\s+/g, "_");
-      add(internalName, displayName);
-    }
-  } catch {}
 
   return servers;
 }

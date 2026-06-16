@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { styleText } from "node:util";
 import checkbox, { Separator } from "@inquirer/checkbox";
 import { findCpmJson } from "../utils/config";
-import { discoverMcpServers } from "../utils/mcp";
+import { discoverMcpServers, type McpServerStatus } from "../utils/mcp";
 
 // ── Hook gate (non-interactive, stdin is piped) ───────────────────────────────
 
@@ -65,18 +65,27 @@ async function runInteractive(): Promise<void> {
 
   const { config, configPath } = found;
   const currentAllowed = new Set(config.allowedMcpServers ?? []);
+
+  console.log(styleText("dim", "\n  Checking MCP server health…"));
   const discovered = discoverMcpServers();
   const discoveredNames = new Set(discovered.map((s) => s.name));
 
   // Servers currently in cpm.json that we couldn't find in any config source
   const orphaned = [...currentAllowed].filter((n) => !discoveredNames.has(n));
 
+  const statusBadge = (s: McpServerStatus) => {
+    if (s === "connected") return styleText("green", "✔ connected   ");
+    if (s === "needs-auth") return styleText("yellow", "⚠ needs auth  ");
+    return styleText("dim", "? unknown     ");
+  };
+
   type Choice =
     | InstanceType<typeof Separator>
     | { name: string; value: string; checked: boolean };
 
+  const PAD = 30;
   const choices: Choice[] = discovered.map((server) => ({
-    name: server.displayName,
+    name: server.displayName.padEnd(PAD) + statusBadge(server.status),
     value: server.name,
     checked: currentAllowed.has(server.name),
   }));
@@ -107,7 +116,7 @@ async function runInteractive(): Promise<void> {
     process.exit(0);
   }
 
-  console.log(styleText("dim", `\n  ${configPath}\n`));
+  console.log(styleText("dim", `\n  ${configPath}`));
 
   const selected = await checkbox({
     message: "Select MCP servers to allow in this project",
