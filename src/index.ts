@@ -16,7 +16,7 @@ program
 
 program
   .command("init")
-  .description("Initialize cmp.json in the project .claude folder")
+  .description("Initialize cpm.json in the project .claude folder")
   .option("-f, --force", "create .claude folder in the current directory if it doesn't exist")
   .action((options) => init(options));
 

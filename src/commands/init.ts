@@ -58,12 +58,12 @@ export async function init(options: { force: boolean }): Promise<void> {
     dotClaude = found.path;
   }
 
-  const cmpJson = join(dotClaude, "cmp.json");
-  if (existsSync(cmpJson)) {
-    console.error(styleText("yellow", `cmp.json already exists: ${cmpJson}`));
+  const cpmJson = join(dotClaude, "cpm.json");
+  if (existsSync(cpmJson)) {
+    console.error(styleText("yellow", `cpm.json already exists: ${cpmJson}`));
     process.exit(1);
   }
 
-  writeFileSync(cmpJson, "{}\n", "utf8");
-  console.log(styleText("green", `Initialized ${cmpJson}`));
+  writeFileSync(cpmJson, "{}\n", "utf8");
+  console.log(styleText("green", `Initialized ${cpmJson}`));
 }
