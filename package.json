@@ -28,7 +28,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "plugins",
+    ".claude-plugin"
   ],
   "type": "module",
   "license": "MIT"
